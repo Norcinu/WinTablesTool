@@ -19,12 +19,6 @@ int WinValueTable[5][3] = {
 	300, 1500, 5000  // Ace
 };
 
-//int	WinValueTable[3][6] = {
-//	/*0,*/ 50, 100, 150, 200, 300, // three of a kind
-//	/*0,*/ 200, 300, 500, 1000, 1500, // four of a kind
-//	/*0,*/ 1000, 1500, 2000, 2500, 5000 // five of a kind
-//};
-
 int WinLines[TOTAL_WINLINES][TOTAL_REELS] = {
 	1,1,1,1,1,   // line 1
 	0,0,0,0,0,	 // line 2
@@ -70,9 +64,28 @@ int Symbols[38] =
 	PUFF
 };
 
+struct TestSymbol
+{
+	unsigned char _r1, _r2, _r3, _r4, _r5;
+	TestSymbol(unsigned char r1, unsigned char r2, unsigned char r3, unsigned char r4, unsigned char r5) :
+	_r1(r1), _r2(r2), _r3(r3), _r4(r4), _r5(r5) {}
+};
+
+enum EType {THREE, FOUR, FIVE};
+
+struct ArrayPosition 
+{
+	EType _type;
+	int pos1, pos2, pos3, pos4, pos5;
+	ArrayPosition() : pos1(0), pos2(0), pos3(0), pos4(0), pos5(0) {}
+};
+
 bool FoundFeature(unsigned char r1, unsigned char r2, unsigned char r3);
-bool IsFiveOfAKind(unsigned char r1, unsigned char r2, unsigned char r3, unsigned char r4, unsigned char r5);
+bool IsFiveOfAKind(const TestSymbol* t, const ArrayPosition* p);
+bool IsFourOfAKind(const TestSymbol* t, const ArrayPosition* p);
+bool IsThreeOfAKind(const TestSymbol* t, const ArrayPosition* p);
+/*bool IsFiveOfAKind(unsigned char r1, unsigned char r2, unsigned char r3, unsigned char r4, unsigned char r5);
 bool IsFourOfAKind(unsigned char r1, unsigned char r2, unsigned char r3, unsigned char r4);
-bool IsThreeOfAKind(unsigned char r1, unsigned char r2, unsigned char r3);
+bool IsThreeOfAKind(unsigned char r1, unsigned char r2, unsigned char r3);*/
 
 #endif
