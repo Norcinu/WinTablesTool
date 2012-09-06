@@ -77,17 +77,6 @@ int CheckForWin()
 {
 	using namespace accum;
 
-	int rr = 0; // reel row
-	int rc = 0; // reel column
-	int wlc = 0; // winline column
-	int winTableSymbol = 0;
-	int featureValue = 0;
-	
-	//accumulatedTotal = 0;
-
-	//if (isfeature) return -1;
-	//if (accumulatedTotal != 0) accumulatedTotal = 0;
-	
 	for (int i = 0; i < TOTAL_WINLINES; ++i) {		
 		int sym1pos = WinLines[i][0];
 		int sym2pos = WinLines[i][1];
@@ -100,7 +89,6 @@ int CheckForWin()
 		// need to get what the symbol in that position is. Currently passing in 0-2.
 		TestSymbol symbols(sym1pos, sym2pos, sym3pos, sym4pos, sym5pos);
 		if (IsFiveOfAKind(&symbols)) {
-			//std::cout << "isfives: ";
 			symbolValue = ReelScreen[i][sym1pos];
 			GetFivesWin(symbolValue);
 			continue;
@@ -108,7 +96,6 @@ int CheckForWin()
 		
 		// four from the left
 		if (IsFourOfAKind(&symbols)) {
-			//std::cout << "isfours1: ";
 			symbolValue = ReelScreen[i][sym1pos];
 			GetFoursWin(symbolValue);
 			continue;
@@ -119,7 +106,6 @@ int CheckForWin()
 		symbols._r3 = sym4pos; 
 		symbols._r4 = sym5pos;
 		if (IsFourOfAKind(&symbols)) {
-			//std::cout << "isfours2: ";
 			symbolValue = ReelScreen[i][sym2pos];
 			GetFoursWin(symbolValue);
 			continue;
@@ -141,7 +127,6 @@ int CheckForWin()
 		symbols._r2 = sym3pos; 
 		symbols._r3 = sym4pos;
 		if (IsThreeOfAKind(&symbols)) {
-			//std::cout << "isthrees2: ";
 			symbolValue = ReelScreen[i][sym2pos];
 			GetThreesWin(symbolValue);
 			continue;
@@ -152,7 +137,6 @@ int CheckForWin()
 		symbols._r2 = sym4pos;
 		symbols._r3 = sym5pos;
 		if (IsThreeOfAKind(&symbols)) {
-			//std::cout << "isthrees3: ";
 			symbolValue = ReelScreen[i][sym3pos];
 			GetThreesWin(symbolValue);
 			continue;
@@ -162,11 +146,7 @@ int CheckForWin()
 	// set featureFound flag if we find a feature,.
 	int total = accumulatedTotal;
 	accumulatedTotal = 0;
-	if (total > 0)
-		return total; 
-	
-	return 0;
-	//return total;
+	return total;
 }
 
 void PickReels()
@@ -224,36 +204,53 @@ int main(int argc, char *argv[]) {
 	srand(time(NULL));
 
 	int counter = 0;
-	int cycle = 1000000;
+	int cycle = 20000000;
+	
+	char *filename;
+	
+#if defined ONE_POUND_GAME
+	filename = "WinResults_1PD.txt";
+#elif defined TWO_POUND_GAME
+	filename = "WinResults_2PD.txt";
+#endif
+	
+	std::ofstream file(filename);
+	file << "Cycle size: " << cycle << "\n";
+	file << "Prize" << std::setw(8) << std::setiosflags(std::ios::right) << "Count" << "\n" << "\n";
+
 	do {
 		cycle--;
 		PickReels();
 
-		// have we found a feature?
-		//while (featureFound) {
-		//	PickReels();
-		//	featureFound = false;
-		//}
-
-		int win = CheckForWin();// / 10;
+		WinResultArray[CheckForWin() / 10]++;
+		/*int win = CheckForWin();// / 10;
 		if (win > 0) {
 			WinResultArray[counter] = win;
 			counter++;
-		}
+		}*/
 	
-	} while (cycle && counter < WIN_ARRAY_SIZE-1);
-	
-	cycle = 0;
+	} while (cycle);
 
-	std::ofstream file("WinResults.txt");
+	cycle = 0;	
 
 	while (cycle < WIN_ARRAY_SIZE) {
 		cycle++;
-		if (WinResultArray[cycle])
+
+		if (WinResultArray[cycle]) {
+			int width;
+			(cycle < 10) ? width = 9 : width = 8;
+			
+			if (cycle >= 100) width = 7;
+			if (cycle >= 1000) width = 6;
+
+			file << "[" << cycle << "]" << std::setiosflags(std::ios::right) << 
+			std::setw(width) << WinResultArray[cycle] << "\n";
+		}
+		/*if (WinResultArray[cycle])
 			if (cycle == 1)
 				file << std::setw(0) <<  WinResultArray[cycle];// << ": ";
 			else
-				file << std::setw(5) << WinResultArray[cycle];
+				file << std::setw(5) << WinResultArray[cycle];*/
 	}
 
 	file.close();

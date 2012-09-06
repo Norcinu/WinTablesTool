@@ -1,6 +1,9 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#define ONE_POUND_GAME
+//#define TWO_POUND_GAME
+
 const int TOTAL_WINLINES	= 10;
 const int TOTAL_REELS		= 5;
 const int TOTAL_COLUMNS		= 3;
@@ -11,6 +14,9 @@ const int WIN_ARRAY_SIZE = 50000 / 10;
 int WinResultArray[WIN_ARRAY_SIZE] = {0};
 int ReelScreen[5][3];
 
+
+#if defined ONE_POUND_GAME
+
 int WinValueTable[5][3] = {
 	50, 200, 1000,	 // 10
 	100, 300, 1500,	 // Jack
@@ -18,6 +24,18 @@ int WinValueTable[5][3] = {
 	200, 1000, 2500, // King
 	300, 1500, 5000  // Ace
 };
+
+#elif defined TWO_POUND_GAME
+
+int WinValueTable[5][3] = {
+	100, 400, 2000,	 // 10
+	100, 600, 3000,	 // Jack
+	300, 1000, 4000,  // Queen
+	400, 2000, 5000, // King
+	600, 3000, 5000  // Ace
+};
+
+#endif
 
 int WinLines[TOTAL_WINLINES][TOTAL_REELS] = {
 	1,1,1,1,1,   // line 1
