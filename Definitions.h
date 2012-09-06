@@ -82,8 +82,8 @@ struct ArrayPosition
 
 bool IsAWin(const TestSymbol* t, const ArrayPosition* p);
 bool FoundFeature(unsigned char r1, unsigned char r2, unsigned char r3);
-bool IsFiveOfAKind(const TestSymbol* t, const ArrayPosition* p);
-bool IsFourOfAKind(const TestSymbol* t, const ArrayPosition* p);
-bool IsThreeOfAKind(const TestSymbol* t, const ArrayPosition* p);
+bool IsFiveOfAKind(const TestSymbol* t);
+bool IsFourOfAKind(const TestSymbol* t);
+bool IsThreeOfAKind(const TestSymbol* t);
 
 #endif
