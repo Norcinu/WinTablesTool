@@ -10,6 +10,64 @@ namespace accum {
 	static int accumulatedTotal;
 };
 
+void GetFivesWin( int sym1pos )
+{
+	using namespace accum;
+
+	switch (sym1pos) {
+	case KING: // King
+		accumulatedTotal += WinValueTable[3][2]; break; // £25 
+	case JACK: // Jack
+		accumulatedTotal += WinValueTable[1][2]; break;
+	case TEN: // Ten
+		accumulatedTotal += WinValueTable[0][2]; break;
+	case ACE: // Ace
+		accumulatedTotal += WinValueTable[4][2]; break;
+	case QUEEN: // Queen
+		accumulatedTotal += WinValueTable[2][2]; break;
+	default:
+		accumulatedTotal += 0; break;
+	}
+}
+
+void GetFoursWin(int sym)
+{
+	using namespace accum;
+	switch (sym) {
+	case KING: // King 3
+		accumulatedTotal += WinValueTable[3][1]; break; // £10
+	case JACK: // Jack 5
+		accumulatedTotal += WinValueTable[1][1]; break;
+	case TEN: // Ten 7
+		accumulatedTotal += WinValueTable[0][1]; break;
+	case ACE: // Ace 9
+		accumulatedTotal += WinValueTable[4][1]; break;
+	case QUEEN: // Queen 13
+		accumulatedTotal += WinValueTable[2][1]; break;
+	default:
+		accumulatedTotal += 0; break;
+	}
+}
+
+void GetThreesWin(int sym)
+{
+	using namespace accum;
+	switch (sym) {
+	case 3: // King
+		accumulatedTotal += WinValueTable[3][0]; break; // £25 
+	case 5: // Jack
+		accumulatedTotal += WinValueTable[1][0]; break;
+	case 7: // Ten
+		accumulatedTotal += WinValueTable[0][0]; break;
+	case 9: // Ace
+		accumulatedTotal += WinValueTable[4][0]; break;
+	case 13: // Queen
+		accumulatedTotal += WinValueTable[2][0]; break;
+	default:
+		accumulatedTotal += 0; break;				
+	}
+}
+
 int CheckForWin() 
 {
 	using namespace accum;
@@ -39,71 +97,53 @@ int CheckForWin()
 		int sym5pos = WinLines[i][4];
 		
 		int ctr = 0;
-
-		// five of a kind
-		if (ReelScreen[i+sym1pos][0] == ReelScreen[i+sym2pos][1] && 
-			ReelScreen[i+sym2pos][1] == ReelScreen[i+sym3pos][2] && 
-			ReelScreen[i+sym3pos][2] == ReelScreen[i+sym4pos][3] && 
-			ReelScreen[i+sym4pos][3] == ReelScreen[i+sym5pos][4]) {
-			switch (sym1pos) {
-			case KING: // King
-				accumulatedTotal += WinValueTable[3][2]; break; // £25 
-			case JACK: // Jack
-				accumulatedTotal += WinValueTable[1][2]; break;
-			case TEN: // Ten
-				accumulatedTotal += WinValueTable[0][2]; break;
-			case ACE: // Ace
-				accumulatedTotal += WinValueTable[4][2]; break;
-			case QUEEN: // Queen
-				accumulatedTotal += WinValueTable[2][2]; break;
-			default:
-				accumulatedTotal += 0; break;
-			}
-
+		
+		TestSymbol symbols(sym1pos, sym2pos, sym3pos, sym4pos, sym5pos);
+		ArrayPosition positions;
+		if (IsFiveOfAKind(&symbols, &positions)) {
+			GetFivesWin(sym1pos);
 			continue;
-
-			// Four of a kind.
-			ctr = 0;
-			if (ReelScreen[i+sym1pos][0] == ReelScreen[i+sym2pos][1] && 
-				ReelScreen[i+sym2pos][1] == ReelScreen[i+sym3pos][2] && 
-				ReelScreen[i+sym3pos][2] == ReelScreen[i+sym4pos][3] ) {
-				switch (sym1pos) {
-				case KING: // King 3
-					accumulatedTotal += WinValueTable[3][2]; break; // £25 
-				case JACK: // Jack 5
-					accumulatedTotal += WinValueTable[1][2]; break;
-				case TEN: // Ten 7
-					accumulatedTotal += WinValueTable[0][2]; break;
-				case ACE: // Ace 9
-					accumulatedTotal += WinValueTable[4][2]; break;
-				case QUEEN: // Queen 13
-					accumulatedTotal += WinValueTable[2][2]; break;
-				default:
-					accumulatedTotal += 0; break;
-				}
-			}
-
+		}
+				
+		// four from the left
+		if (IsFourOfAKind(&symbols, &positions)) {
+			GetFoursWin(sym1pos);
 			continue;
+		}
+		
+		symbols._r1 = sym2pos; 
+		symbols._r2 = sym3pos; 
+		symbols._r3 = sym4pos; 
+		symbols._r4 = sym5pos;
+		if (IsFourOfAKind(&symbols, &positions)) {
+			GetFoursWin(sym2pos);
+			continue;
+		}
 
-			// three of a kind
-			ctr = 0;
-			if (ReelScreen[i+sym1pos][c] == ReelScreen[i+sym2pos][++ctr] && 
-				ReelScreen[i+sym2pos][ctr] == ReelScreen[i+sym3pos][++ctr]) {
-				switch (sym1pos) {
-				case 3: // King
-					accumulatedTotal += WinValueTable[3][2]; break; // £25 
-				case 5: // Jack
-					accumulatedTotal += WinValueTable[1][2]; break;
-				case 7: // Ten
-					accumulatedTotal += WinValueTable[0][2]; break;
-				case 9: // Ace
-					accumulatedTotal += WinValueTable[4][2]; break;
-				case 13: // Queen
-					accumulatedTotal += WinValueTable[2][2]; break;
-				default:
-					accumulatedTotal += 0; break;				
-				}
-			}
+		// 3 from the left
+		symbols._r1 = sym1pos; 
+		symbols._r2 = sym2pos; 
+		symbols._r3 = sym3pos;
+		if (IsThreeOfAKind(&symbols, &positions)) {
+			GetThreesWin(sym1pos);
+			continue;
+		}
+
+		// three from centre
+		symbols._r1 = sym2pos; 
+		symbols._r2 = sym3pos; 
+		symbols._r3 = sym4pos;
+		if (IsThreeOfAKind(&symbols, &positions)) {
+			GetThreesWin(sym2pos);
+			continue;
+		}
+
+		// three from the right
+		symbols._r1 = sym3pos;
+		symbols._r2 = sym4pos;
+		symbols._r3 = sym5pos;
+		if (IsThreeOfAKind(&symbols, &positions)) {
+
 		}
 	}
 
@@ -127,7 +167,7 @@ void PickReels()
 	}
 }
 
-bool IsAWin(const TestSymbol* t, const ArrayPosition* p) const
+bool IsAWin(const TestSymbol* t, const ArrayPosition* p)
 {
 	switch (p->_type) {
 	case THREE:
@@ -182,7 +222,7 @@ int main(int argc, char *argv[]) {
 	} while (cycle);
 	
 	
-	while (cycle > WIN_ARRAY_SIZE) {
+	while (cycle < WIN_ARRAY_SIZE) {
 		cycle++;
 		if (WinResultArray[cycle])
 			std::cout << WinResultArray[cycle] << ": ";
