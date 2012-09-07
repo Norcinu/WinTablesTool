@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 	srand(time(NULL));
 
 	int counter = 0;
-	int cycle = 20000000;
+	int cycle = 1000000;//20000000;
 	
 	char *filename;
 	
