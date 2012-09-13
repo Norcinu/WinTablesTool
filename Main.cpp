@@ -89,14 +89,14 @@ int CheckForWin()
 		// need to get what the symbol in that position is. Currently passing in 0-2.
 		TestSymbol symbols(sym1pos, sym2pos, sym3pos, sym4pos, sym5pos);
 		if (IsFiveOfAKind(&symbols)) {
-			symbolValue = ReelScreen[i][sym1pos];
+			symbolValue = ReelScreen[0][sym1pos];
 			GetFivesWin(symbolValue);
 			continue;
 		}
 		
 		// four from the left
 		if (IsFourOfAKind(&symbols)) {
-			symbolValue = ReelScreen[i][sym1pos];
+			symbolValue = ReelScreen[0][sym1pos];
 			GetFoursWin(symbolValue);
 			continue;
 		}
@@ -106,7 +106,7 @@ int CheckForWin()
 		symbols._r3 = sym4pos; 
 		symbols._r4 = sym5pos;
 		if (IsFourOfAKind(&symbols)) {
-			symbolValue = ReelScreen[i][sym2pos];
+			symbolValue = ReelScreen[1][sym2pos];
 			GetFoursWin(symbolValue);
 			continue;
 		}
@@ -117,7 +117,7 @@ int CheckForWin()
 		symbols._r3 = sym3pos;
 		if (IsThreeOfAKind(&symbols)) {
 			//std::cout << "isthrees1: ";
-			symbolValue = ReelScreen[i][sym1pos];
+			symbolValue = ReelScreen[0][sym1pos];
 			GetThreesWin(symbolValue);
 			continue;
 		}
@@ -127,7 +127,7 @@ int CheckForWin()
 		symbols._r2 = sym3pos; 
 		symbols._r3 = sym4pos;
 		if (IsThreeOfAKind(&symbols)) {
-			symbolValue = ReelScreen[i][sym2pos];
+			symbolValue = ReelScreen[1][sym2pos];
 			GetThreesWin(symbolValue);
 			continue;
 		}
@@ -137,7 +137,7 @@ int CheckForWin()
 		symbols._r2 = sym4pos;
 		symbols._r3 = sym5pos;
 		if (IsThreeOfAKind(&symbols)) {
-			symbolValue = ReelScreen[i][sym3pos];
+			symbolValue = ReelScreen[2][sym3pos];
 			GetThreesWin(symbolValue);
 			continue;
 		}
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
 	srand(time(NULL));
 
 	int counter = 0;
-	int cycle = 1000000;//20000000;
+	int cycle = 2000000; //20000000;
 	
 	char *filename;
 	
@@ -223,11 +223,11 @@ int main(int argc, char *argv[]) {
 		PickReels();
 
 		WinResultArray[CheckForWin() / 10]++;
-		/*int win = CheckForWin();// / 10;
-		if (win > 0) {
-			WinResultArray[counter] = win;
-			counter++;
-		}*/
+		//int win = CheckForWin();// / 10;
+		//if (win > 0) {
+		//	WinResultArray[counter] = win;
+		//	counter++;
+		//}
 	
 	} while (cycle);
 

@@ -104,4 +104,8 @@ bool IsFiveOfAKind(const TestSymbol* t);
 bool IsFourOfAKind(const TestSymbol* t);
 bool IsThreeOfAKind(const TestSymbol* t);
 
+bool IsFiveOfAKind(const int index, const TestSymbol* t);
+bool IsFourOfAKind(const int index, const TestSymbol* t);
+bool IsThreeOfAKind(const int index, const TestSymbol* t);
+
 #endif
