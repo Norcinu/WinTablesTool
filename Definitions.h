@@ -1,14 +1,13 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-//#define ONE_POUND_GAME
-#define TWO_POUND_GAME
+#define ONE_POUND_GAME
+//#define TWO_POUND_GAME
 
 const int TOTAL_WINLINES	= 10;
 const int TOTAL_REELS		= 5;
 const int TOTAL_COLUMNS		= 3;
 
-//enum {PUFF, CRAB, SHARK, KING, SHELL, JACK, WONGA, TEN, LOBSTER, ACE, STARFISH, DIVER, QUEEN};
 enum {TEN, JACK, QUEEN, KING, ACE, CRAB, DIVER, LOBSTER, PUFF, SHARK, SHELL, STARFISH, WONGA};
 const int WIN_ARRAY_SIZE = 50000 / 10;
 int WinResultArray[WIN_ARRAY_SIZE] = {0};
@@ -29,7 +28,7 @@ int WinValueTable[5][3] = {
 
 int WinValueTable[5][3] = {
 	100, 400, 2000,	 // 10
-	100, 600, 3000,	 // Jack
+	200, 600, 3000,	 // Jack
 	300, 1000, 4000, // Queen
 	400, 2000, 5000, // King
 	600, 3000, 5000  // Ace
@@ -100,11 +99,8 @@ struct ArrayPosition
 
 bool IsAWin(const TestSymbol* t, const ArrayPosition* p);
 bool FoundFeature(unsigned char r1, unsigned char r2, unsigned char r3);
-bool IsFiveOfAKind(const TestSymbol* t);
-bool IsFourOfAKind(const TestSymbol* t);
-bool IsThreeOfAKind(const TestSymbol* t);
 
-bool IsFiveOfAKind(const int index, const TestSymbol* t);
+bool IsFiveOfAKind(const TestSymbol* t);
 bool IsFourOfAKind(const int index, const TestSymbol* t);
 bool IsThreeOfAKind(const int index, const TestSymbol* t);
 

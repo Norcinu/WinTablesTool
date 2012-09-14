@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
+#include <cassert>
 
 #include "Definitions.h"
 
@@ -57,15 +58,15 @@ void GetThreesWin(int sym)
 {
 	using namespace accum;
 	switch (sym) {
-	case 3: // King
+	case KING: // King
 		accumulatedTotal += WinValueTable[3][0]; break; // £25 
-	case 5: // Jack
+	case JACK: // Jack
 		accumulatedTotal += WinValueTable[1][0]; break;
-	case 7: // Ten
+	case TEN: // Ten
 		accumulatedTotal += WinValueTable[0][0]; break;
-	case 9: // Ace
+	case ACE: // Ace
 		accumulatedTotal += WinValueTable[4][0]; break;
-	case 13: // Queen
+	case QUEEN: // Queen
 		accumulatedTotal += WinValueTable[2][0]; break;
 	default:
 	//	featureFound = true;
@@ -90,56 +91,33 @@ int CheckForWin()
 		TestSymbol symbols(sym1pos, sym2pos, sym3pos, sym4pos, sym5pos);
 		if (IsFiveOfAKind(&symbols)) {
 			symbolValue = ReelScreen[0][sym1pos];
-			GetFivesWin(symbolValue);
-			continue;
-		}
-		
-		// four from the left
-		if (IsFourOfAKind(&symbols)) {
+			if (symbolValue < ACE)
+				GetFivesWin(symbolValue);
+		} 
+		else if (IsFourOfAKind(0, &symbols)) {
 			symbolValue = ReelScreen[0][sym1pos];
-			GetFoursWin(symbolValue);
-			continue;
+			if (symbolValue < ACE)
+				GetFoursWin(symbolValue);
 		}
-		
-		symbols._r1 = sym2pos; 
-		symbols._r2 = sym3pos; 
-		symbols._r3 = sym4pos; 
-		symbols._r4 = sym5pos;
-		if (IsFourOfAKind(&symbols)) {
+		else if (IsFourOfAKind(1, &symbols)) {
 			symbolValue = ReelScreen[1][sym2pos];
-			GetFoursWin(symbolValue);
-			continue;
+			if (symbolValue < ACE)
+				GetFoursWin(symbolValue);
 		}
-
-		// 3 from the left
-		symbols._r1 = sym1pos; 
-		symbols._r2 = sym2pos; 
-		symbols._r3 = sym3pos;
-		if (IsThreeOfAKind(&symbols)) {
-			//std::cout << "isthrees1: ";
+		else if (IsThreeOfAKind(0, &symbols)) {
 			symbolValue = ReelScreen[0][sym1pos];
-			GetThreesWin(symbolValue);
-			continue;
+			if (symbolValue < ACE)
+				GetThreesWin(symbolValue);
 		}
-
-		// three from centre
-		symbols._r1 = sym2pos; 
-		symbols._r2 = sym3pos; 
-		symbols._r3 = sym4pos;
-		if (IsThreeOfAKind(&symbols)) {
+		else if (IsThreeOfAKind(1, &symbols)) {
 			symbolValue = ReelScreen[1][sym2pos];
-			GetThreesWin(symbolValue);
-			continue;
+			if (symbolValue <= ACE)
+				GetThreesWin(symbolValue);
 		}
-
-		// three from the right
-		symbols._r1 = sym3pos;
-		symbols._r2 = sym4pos;
-		symbols._r3 = sym5pos;
-		if (IsThreeOfAKind(&symbols)) {
+		else if (IsThreeOfAKind(2, &symbols)) {
 			symbolValue = ReelScreen[2][sym3pos];
-			GetThreesWin(symbolValue);
-			continue;
+			if (symbolValue <= ACE)
+				GetThreesWin(symbolValue);
 		}
 	}
 
@@ -169,9 +147,9 @@ bool IsAWin(const TestSymbol* t, const ArrayPosition* p)
 {
 	switch (p->_type) {
 	case THREE:
-		return IsThreeOfAKind(t);
+		return IsThreeOfAKind(0, t);
 	case FOUR:
-		return IsFourOfAKind(t);
+		return IsFourOfAKind(0,t);
 	case FIVE:
 		return IsFiveOfAKind(t);
 	default:
@@ -181,30 +159,51 @@ bool IsAWin(const TestSymbol* t, const ArrayPosition* p)
 
 bool IsFiveOfAKind(const TestSymbol* t)
 {
+	assert (t != NULL);
 	return ReelScreen[0][t->_r1] == ReelScreen[1][t->_r2] && 
 		   ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3] &&
 		   ReelScreen[2][t->_r3] == ReelScreen[3][t->_r4] &&
 		   ReelScreen[3][t->_r4] == ReelScreen[4][t->_r5];
 }
 
-bool IsFourOfAKind(const TestSymbol* t)
+bool IsFourOfAKind(int index, const TestSymbol* t)
 {
-	return ReelScreen[0][t->_r1] == ReelScreen[1][t->_r2] && 
-		   ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3] &&
-		   ReelScreen[2][t->_r3] == ReelScreen[3][t->_r4];
+	assert (t != NULL);
+	if (index == 0) {
+		return ReelScreen[0][t->_r1] == ReelScreen[1][t->_r2] && 
+        	   ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3] &&
+			   ReelScreen[2][t->_r3] == ReelScreen[3][t->_r4];
+	}
+	else {
+		return ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3] && 
+			   ReelScreen[2][t->_r3] == ReelScreen[3][t->_r4] &&
+			   ReelScreen[3][t->_r4] == ReelScreen[4][t->_r5];
+	}
 }
 
-bool IsThreeOfAKind(const TestSymbol* t)
+bool IsThreeOfAKind(int index, const TestSymbol* t)
 {
-	return ReelScreen[0][t->_r1] == ReelScreen[1][t->_r2] && 
-		   ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3];
+	assert (t != NULL);
+	
+	if (index == 0) {
+		return ReelScreen[0][t->_r1] == ReelScreen[1][t->_r2] && 
+			   ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3];
+	}
+	else if (index == 1) {
+		return ReelScreen[1][t->_r2] == ReelScreen[2][t->_r3] && 
+			   ReelScreen[2][t->_r3] == ReelScreen[3][t->_r4];
+	}
+	else {
+		return ReelScreen[2][t->_r3] == ReelScreen[3][t->_r4] && 
+			   ReelScreen[3][t->_r4] == ReelScreen[4][t->_r5];
+	}
 }
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 
 	int counter = 0;
-	int cycle = 2000000; //20000000;
+	int cycle = 20000000; //20000000;
 	
 	char *filename;
 	
@@ -223,11 +222,6 @@ int main(int argc, char *argv[]) {
 		PickReels();
 
 		WinResultArray[CheckForWin() / 10]++;
-		//int win = CheckForWin();// / 10;
-		//if (win > 0) {
-		//	WinResultArray[counter] = win;
-		//	counter++;
-		//}
 	
 	} while (cycle);
 
@@ -246,11 +240,6 @@ int main(int argc, char *argv[]) {
 			file << "[" << cycle << "]" << std::setiosflags(std::ios::right) << 
 			std::setw(width) << WinResultArray[cycle] << "\n";
 		}
-		/*if (WinResultArray[cycle])
-			if (cycle == 1)
-				file << std::setw(0) <<  WinResultArray[cycle];// << ": ";
-			else
-				file << std::setw(5) << WinResultArray[cycle];*/
 	}
 
 	file.close();
